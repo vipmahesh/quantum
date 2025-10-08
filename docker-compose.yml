@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  quantum-simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quantum-simulator
+    ports:
+      - "5000:5000"
+    environment:
+      # Variables de entorno (NO incluir credenciales aquí)
+      - FLASK_ENV=${FLASK_ENV:-production}
+      - FLASK_DEBUG=${FLASK_DEBUG:-False}
+      - HOST=0.0.0.0
+      - PORT=5000
+      # IBM Quantum Token - usar variable de entorno del host
+      - IBM_QUANTUM_TOKEN=${IBM_QUANTUM_TOKEN}
+      - SECRET_KEY=${SECRET_KEY:-change-this-in-production}
+    volumes:
+      # Montar solo directorios específicos si es necesario
+      - ./logs:/app/logs
+      - ./data:/app/data
+    restart: unless-stopped
+    networks:
+      - quantum-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/molecules"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  quantum-network:
+    driver: bridge
+
+# IMPORTANTE: 
+# Para configurar IBM_QUANTUM_TOKEN, usa:
+# 
+# Linux/Mac:
+#   export IBM_QUANTUM_TOKEN=tu_token
+#   docker-compose up -d
+#
+# Windows PowerShell:
+#   $env:IBM_QUANTUM_TOKEN="tu_token"
+#   docker-compose up -d
+#
+# O crea un archivo .env (NO lo subas a Git):
+#   IBM_QUANTUM_TOKEN=tu_token
+#   SECRET_KEY=tu_clave_secreta
+

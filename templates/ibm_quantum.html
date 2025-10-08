@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBM Quantum - Simulador Cuántico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .config-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        }
+        
+        .result-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            border: 2px solid #e9ecef;
+            min-height: 200px;
+        }
+        
+        .energy-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .backend-info {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .backend-info h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .backends-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .backend-item {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .backend-item:last-child {
+            border-bottom: none;
+        }
+        
+        .backend-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .backend-status {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        
+        .quantum-info {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .quantum-info h3 {
+            margin-bottom: 15px;
+        }
+        
+        .quantum-info ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .quantum-info li {
+            padding: 5px 0;
+        }
+        
+        .quantum-info li:before {
+            content: "⚛️ ";
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚛️ IBM Quantum Integration</h1>
+            <p>Simulación cuántica con hardware real de IBM</p>
+        </div>
+        
+        <div class="main-content">
+            <!-- Configuración de IBM Quantum -->
+            <div class="config-panel">
+                <h2>🔧 Configuración de IBM Quantum</h2>
+                
+                <div class="form-group">
+                    <label for="apiToken">API Token de IBM Quantum:</label>
+                    <input type="password" id="apiToken" placeholder="Ingresa tu API token de IBM Quantum">
+                    <small>Obtén tu token en: <a href="https://quantum-computing.ibm.com/" target="_blank">IBM Quantum Experience</a></small>
+                </div>
+                
+                <button class="btn btn-primary" onclick="configureIBMQuantum()">
+                    🔗 Configurar IBM Quantum
+                </button>
+                
+                <button class="btn btn-warning" onclick="getBackends()">
+                    📡 Ver Backends Disponibles
+                </button>
+                
+                <div id="configResult" style="margin-top: 15px;"></div>
+            </div>
+            
+            <!-- Simulación Cuántica -->
+            <div class="config-panel">
+                <h2>🧪 Simulación Cuántica</h2>
+                
+                <div class="form-group">
+                    <label for="moleculeSelect">Seleccionar Molécula:</label>
+                    <select id="moleculeSelect">
+                        <option value="LiH">Litio-Hidrógeno (LiH)</option>
+                        <option value="Li_GLYCINE">Litio-Glicina (Li_GLYCINE)</option>
+                        <option value="H2O">Agua (H2O)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="useIBMQuantum">
+                        <input type="checkbox" id="useIBMQuantum" checked>
+                        Usar IBM Quantum (Hardware Real)
+                    </label>
+                </div>
+                
+                <button class="btn btn-success" onclick="runIBMQuantumSimulation()">
+                    ⚛️ Ejecutar en IBM Quantum
+                </button>
+                
+                <button class="btn btn-primary" onclick="runLocalSimulation()">
+                    💻 Ejecutar Localmente
+                </button>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Ejecutando simulación cuántica...</p>
+                </div>
+            </div>
+            
+            <!-- Información de Backends -->
+            <div class="backends-list" id="backendsList" style="display: none;">
+                <h3>📡 Backends de IBM Quantum Disponibles</h3>
+                <div id="backendsContent"></div>
+            </div>
+            
+            <!-- Resultados -->
+            <div class="result-panel">
+                <h3>📊 Resultados de la Simulación</h3>
+                <div id="result">
+                    <p>Configura IBM Quantum y ejecuta una simulación para ver los resultados.</p>
+                </div>
+            </div>
+            
+            <!-- Información Cuántica -->
+            <div class="quantum-info">
+                <h3>⚛️ Acerca de IBM Quantum</h3>
+                <ul>
+                    <li><strong>Hardware Real:</strong> Acceso a computadoras cuánticas reales de IBM</li>
+                    <li><strong>Simulación Avanzada:</strong> Algoritmos cuánticos optimizados</li>
+                    <li><strong>Resultados Precisos:</strong> Mediciones reales de estados cuánticos</li>
+                    <li><strong>Cola de Trabajos:</strong> Los trabajos se ejecutan en orden de llegada</li>
+                    <li><strong>Límites de Qubits:</strong> Depende del backend seleccionado</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentSimulationId = null;
+        let isConfigured = false;
+        
+        // ============================================================================
+        // CONFIGURACIÓN DE IBM QUANTUM
+        // ============================================================================
+        
+        async function configureIBMQuantum() {
+            const apiToken = document.getElementById('apiToken').value;
+            const result = document.getElementById('configResult');
+            
+            if (!apiToken) {
+                result.innerHTML = '<div class="status-indicator status-error">Error: API token requerido</div>';
+                return;
+            }
+            
+            result.innerHTML = '<p>Configurando IBM Quantum...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/ibm-quantum/configure', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ api_token: apiToken })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    result.innerHTML = `
+                        <div class="status-indicator status-success">IBM Quantum configurado correctamente</div>
+                        <p>Backends disponibles: ${data.backends_available}</p>
+                    `;
+                    isConfigured = true;
+                } else {
+                    result.innerHTML = `<div class="status-indicator status-error">Error: ${data.error}</div>`;
+                }
+                
+            } catch (error) {
+                result.innerHTML = `<div class="status-indicator status-error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function getBackends() {
+            const backendsList = document.getElementById('backendsList');
+            const backendsContent = document.getElementById('backendsContent');
+            
+            backendsList.style.display = 'block';
+            backendsContent.innerHTML = '<p>Cargando backends...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/ibm-quantum/backends');
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = '';
+                    data.backends.forEach(backend => {
+                        html += `
+                            <div class="backend-item">
+                                <div>
+                                    <div class="backend-name">${backend.name}</div>
+                                    <div class="backend-status">
+                                        ${backend.n_qubits} qubits | 
+                                        ${backend.simulator ? 'Simulador' : 'Hardware Real'} | 
+                                        ${backend.status}
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="status-indicator ${backend.operational ? 'status-success' : 'status-error'}">
+                                        ${backend.operational ? 'Operacional' : 'No disponible'}
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    backendsContent.innerHTML = html;
+                } else {
+                    backendsContent.innerHTML = `<div class="status-indicator status-error">Error: ${data.error}</div>`;
+                }
+                
+            } catch (error) {
+                backendsContent.innerHTML = `<div class="status-indicator status-error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        // ============================================================================
+        // SIMULACIONES
+        // ============================================================================
+        
+        async function runIBMQuantumSimulation() {
+            const molecule = document.getElementById('moleculeSelect').value;
+            const apiToken = document.getElementById('apiToken').value;
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/ibm-quantum/simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        molecule: molecule,
+                        api_token: apiToken,
+                        parameters: {}
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResult(`
+                        <div class="energy-display">⚛️ Energía: ${data.energy} Ha</div>
+                        <div class="status-indicator status-success">${data.interaction_strength}</div>
+                        <p><strong>Molécula:</strong> ${data.molecule}</p>
+                        <p><strong>Backend:</strong> ${data.backend_used}</p>
+                        <p><strong>Tiempo de cómputo:</strong> ${data.computation_time.toFixed(2)} segundos</p>
+                        <p><strong>Profundidad del circuito:</strong> ${data.quantum_circuit_depth}</p>
+                        <p><strong>Shots:</strong> ${data.shots}</p>
+                        <div class="status-indicator status-success">Simulación IBM Quantum completada</div>
+                    `);
+                } else {
+                    showError(`Error: ${data.error}`);
+                }
+                
+            } catch (error) {
+                showError(`Error de conexión: ${error.message}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        async function runLocalSimulation() {
+            const molecule = document.getElementById('moleculeSelect').value;
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/quantum/simple', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        molecule: molecule,
+                        parameters: {}
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showResult(`
+                        <div class="energy-display">💻 Energía: ${data.data.energy} Ha</div>
+                        <div class="status-indicator status-info">${data.data.interaction_strength}</div>
+                        <p><strong>Molécula:</strong> ${data.data.molecule}</p>
+                        <p><strong>Backend:</strong> Simulador Local</p>
+                        <p><strong>Tiempo de cómputo:</strong> ${data.data.computation_time}</p>
+                        <div class="status-indicator status-info">Simulación local completada</div>
+                    `);
+                } else {
+                    showError(`Error: ${data.error}`);
+                }
+                
+            } catch (error) {
+                showError(`Error de conexión: ${error.message}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // ============================================================================
+        // FUNCIONES DE UI
+        // ============================================================================
+        
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            loading.style.display = show ? 'block' : 'none';
+        }
+        
+        function showResult(html) {
+            const result = document.getElementById('result');
+            result.innerHTML = html;
+        }
+        
+        function showError(message) {
+            const result = document.getElementById('result');
+            result.innerHTML = `
+                <div class="status-indicator status-error">Error</div>
+                <p>${message}</p>
+            `;
+        }
+        
+        // ============================================================================
+        // INICIALIZACIÓN
+        // ============================================================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('IBM Quantum Integration cargado');
+            console.log('Para usar IBM Quantum:');
+            console.log('1. Obtén tu API token de: https://quantum-computing.ibm.com/');
+            console.log('2. Configura el token en la interfaz');
+            console.log('3. Ejecuta simulaciones en hardware cuántico real');
+        });
+    </script>
+</body>
+</html>
+
+
+

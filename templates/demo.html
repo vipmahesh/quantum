@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Demo - Simulador Cuántico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            padding: 40px;
+        }
+        
+        .demo-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid #e9ecef;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .demo-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .demo-card p {
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+        .result-area {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid #e9ecef;
+            min-height: 150px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .energy-display {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .molecule-selector {
+            margin-bottom: 20px;
+        }
+        
+        .molecule-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .api-demo {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .api-demo h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+        
+        .api-demo code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .comparison-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .back-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Demo Interactivo</h1>
+            <p>Prueba todas las funcionalidades del Simulador Cuántico</p>
+        </div>
+        
+        <div class="demo-grid">
+            <!-- Demo 1: API REST Simple -->
+            <div class="demo-card">
+                <h3>🎯 API REST Simple</h3>
+                <p>Simulación cuántica básica con respuesta inmediata. Ideal para pruebas rápidas y desarrollo.</p>
+                
+                <div class="molecule-selector">
+                    <select id="simpleMolecule">
+                        <option value="LiH">Litio-Hidrógeno (LiH)</option>
+                        <option value="Li_GLYCINE">Litio-Glicina (Li_GLYCINE)</option>
+                        <option value="H2O">Agua (H2O)</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-primary" onclick="demoSimpleAPI()">
+                    🚀 Ejecutar Simulación Simple
+                </button>
+                
+                <div class="result-area" id="simpleResult">
+                    <p>Haz clic en el botón para ejecutar una simulación simple.</p>
+                </div>
+            </div>
+            
+            <!-- Demo 2: WebSocket Tiempo Real -->
+            <div class="demo-card">
+                <h3>🔌 WebSocket Tiempo Real</h3>
+                <p>Simulación con progreso en tiempo real usando WebSockets. Observa el progreso paso a paso.</p>
+                
+                <div class="molecule-selector">
+                    <select id="wsMolecule">
+                        <option value="LiH">Litio-Hidrógeno (LiH)</option>
+                        <option value="Li_GLYCINE">Litio-Glicina (Li_GLYCINE)</option>
+                        <option value="H2O">Agua (H2O)</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-success" onclick="demoWebSocket()">
+                    ⚡ Iniciar WebSocket
+                </button>
+                
+                <div class="progress-bar" id="wsProgress" style="display: none;">
+                    <div class="progress-fill" id="wsProgressFill"></div>
+                </div>
+                
+                <div class="result-area" id="wsResult">
+                    <p>Haz clic en el botón para iniciar una simulación WebSocket.</p>
+                </div>
+            </div>
+            
+            <!-- Demo 3: API Mock -->
+            <div class="demo-card">
+                <h3>🧪 API Mock</h3>
+                <p>Simulación mock para desarrollo frontend. Respuestas predefinidas sin cálculos reales.</p>
+                
+                <div class="molecule-selector">
+                    <select id="mockMolecule">
+                        <option value="LiH">Litio-Hidrógeno (LiH)</option>
+                        <option value="Li_GLYCINE">Litio-Glicina (Li_GLYCINE)</option>
+                        <option value="H2O">Agua (H2O)</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-warning" onclick="demoMockAPI()">
+                    🧪 Ejecutar Mock
+                </button>
+                
+                <div class="result-area" id="mockResult">
+                    <p>Haz clic en el botón para ejecutar una simulación mock.</p>
+                </div>
+            </div>
+            
+            <!-- Demo 4: Comparación de APIs -->
+            <div class="demo-card">
+                <h3>📊 Comparación de APIs</h3>
+                <p>Ejecuta la misma simulación con diferentes APIs para comparar resultados y tiempos.</p>
+                
+                <div class="molecule-selector">
+                    <select id="compareMolecule">
+                        <option value="LiH">Litio-Hidrógeno (LiH)</option>
+                        <option value="Li_GLYCINE">Litio-Glicina (Li_GLYCINE)</option>
+                        <option value="H2O">Agua (H2O)</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-danger" onclick="demoComparison()">
+                    📊 Comparar APIs
+                </button>
+                
+                <div class="result-area" id="compareResult">
+                    <p>Haz clic en el botón para comparar diferentes APIs.</p>
+                </div>
+            </div>
+            
+            <!-- Demo 5: Análisis de Interacción -->
+            <div class="demo-card">
+                <h3>🔬 Análisis de Interacción</h3>
+                <p>Analiza la interacción entre dos moléculas diferentes usando métodos cuánticos.</p>
+                
+                <div class="molecule-selector">
+                    <label>Molécula 1:</label>
+                    <select id="mol1">
+                        <option value="LiH">Litio-Hidrógeno (LiH)</option>
+                        <option value="H2O">Agua (H2O)</option>
+                    </select>
+                </div>
+                
+                <div class="molecule-selector">
+                    <label>Molécula 2:</label>
+                    <select id="mol2">
+                        <option value="H2O">Agua (H2O)</option>
+                        <option value="LiH">Litio-Hidrógeno (LiH)</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-primary" onclick="demoInteraction()">
+                    🔬 Analizar Interacción
+                </button>
+                
+                <div class="result-area" id="interactionResult">
+                    <p>Selecciona dos moléculas y haz clic en el botón para analizar su interacción.</p>
+                </div>
+            </div>
+            
+            <!-- Demo 6: Información de Moléculas -->
+            <div class="demo-card">
+                <h3>📚 Información de Moléculas</h3>
+                <p>Obtén información detallada sobre las moléculas disponibles en el simulador.</p>
+                
+                <button class="btn btn-success" onclick="demoMoleculeInfo()">
+                    📚 Obtener Información
+                </button>
+                
+                <div class="result-area" id="infoResult">
+                    <p>Haz clic en el botón para obtener información de las moléculas.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="back-link">
+            <a href="/">← Volver al Simulador Principal</a>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script>
+        let socket = null;
+        
+        // ============================================================================
+        // 🎯 DEMO 1: API REST Simple
+        // ============================================================================
+        
+        async function demoSimpleAPI() {
+            const molecule = document.getElementById('simpleMolecule').value;
+            const result = document.getElementById('simpleResult');
+            
+            result.innerHTML = '<p>🔄 Ejecutando simulación simple...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/quantum/simple', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ molecule: molecule })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    result.innerHTML = `
+                        <div class="energy-display">⚡ ${data.data.energy} Ha</div>
+                        <div class="status-indicator status-success">${data.data.interaction_strength}</div>
+                        <p><strong>Molécula:</strong> ${data.data.molecule}</p>
+                        <p><strong>Tiempo:</strong> ${data.data.computation_time}</p>
+                        <p><strong>Mensaje:</strong> ${data.data.message}</p>
+                    `;
+                } else {
+                    result.innerHTML = `<div class="status-indicator status-error">Error: ${data.error}</div>`;
+                }
+                
+            } catch (error) {
+                result.innerHTML = `<div class="status-indicator status-error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        // ============================================================================
+        // 🔌 DEMO 2: WebSocket
+        // ============================================================================
+        
+        function demoWebSocket() {
+            const molecule = document.getElementById('wsMolecule').value;
+            const result = document.getElementById('wsResult');
+            const progressBar = document.getElementById('wsProgress');
+            const progressFill = document.getElementById('wsProgressFill');
+            
+            // Conectar WebSocket si no está conectado
+            if (!socket) {
+                socket = io('http://localhost:5000');
+                
+                socket.on('connected', (data) => {
+                    console.log('Conectado:', data.message);
+                });
+                
+                socket.on('simulation_progress', (data) => {
+                    progressBar.style.display = 'block';
+                    progressFill.style.width = data.progress + '%';
+                    result.innerHTML = `<p>🔄 ${data.message}</p>`;
+                });
+                
+                socket.on('simulation_complete', (data) => {
+                    result.innerHTML = `
+                        <div class="energy-display">⚡ ${data.energy} Ha</div>
+                        <div class="status-indicator status-success">${data.interaction_strength}</div>
+                        <p><strong>Molécula:</strong> ${data.molecule}</p>
+                        <p><strong>Tiempo:</strong> ${data.computation_time.toFixed(2)}s</p>
+                        <div class="status-indicator status-success">WebSocket completado</div>
+                    `;
+                    progressBar.style.display = 'none';
+                });
+                
+                socket.on('simulation_error', (data) => {
+                    result.innerHTML = `<div class="status-indicator status-error">Error: ${data.error}</div>`;
+                    progressBar.style.display = 'none';
+                });
+            }
+            
+            // Iniciar simulación
+            result.innerHTML = '<p>🔄 Iniciando simulación WebSocket...</p>';
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+            
+            socket.emit('start_quantum_simulation', {
+                molecule: molecule,
+                parameters: {}
+            });
+        }
+        
+        // ============================================================================
+        // 🧪 DEMO 3: API Mock
+        // ============================================================================
+        
+        async function demoMockAPI() {
+            const molecule = document.getElementById('mockMolecule').value;
+            const result = document.getElementById('mockResult');
+            
+            result.innerHTML = '<p>🔄 Ejecutando simulación mock...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/mock/quantum-simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ molecule: molecule })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    result.innerHTML = `
+                        <div class="energy-display">🧪 ${data.energy.toFixed(4)} Ha</div>
+                        <div class="status-indicator status-info">${data.interaction_strength}</div>
+                        <p><strong>Molécula:</strong> ${data.molecule}</p>
+                        <p><strong>Tiempo:</strong> ${data.computation_time}</p>
+                        <p><strong>Mensaje:</strong> ${data.message}</p>
+                        <div class="status-indicator status-info">Simulación Mock</div>
+                    `;
+                } else {
+                    result.innerHTML = `<div class="status-indicator status-error">Error: ${data.error}</div>`;
+                }
+                
+            } catch (error) {
+                result.innerHTML = `<div class="status-indicator status-error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        // ============================================================================
+        // 📊 DEMO 4: Comparación de APIs
+        // ============================================================================
+        
+        async function demoComparison() {
+            const molecule = document.getElementById('compareMolecule').value;
+            const result = document.getElementById('compareResult');
+            
+            result.innerHTML = '<p>🔄 Comparando APIs...</p>';
+            
+            const apis = [
+                { name: 'REST Simple', url: '/api/quantum/simple' },
+                { name: 'REST Completo', url: '/api/quantum/simulate' },
+                { name: 'Mock API', url: '/api/mock/quantum-simulate' }
+            ];
+            
+            const results = [];
+            
+            for (const api of apis) {
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(`http://localhost:5000${api.url}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ molecule: molecule })
+                    });
+                    const endTime = Date.now();
+                    const data = await response.json();
+                    
+                    results.push({
+                        name: api.name,
+                        success: true,
+                        time: endTime - startTime,
+                        data: data
+                    });
+                } catch (error) {
+                    results.push({
+                        name: api.name,
+                        success: false,
+                        error: error.message
+                    });
+                }
+            }
+            
+            // Mostrar resultados en tabla
+            let tableHTML = '<table class="comparison-table"><tr><th>API</th><th>Estado</th><th>Tiempo</th><th>Energía</th></tr>';
+            
+            results.forEach(result => {
+                if (result.success) {
+                    const energy = result.data.data?.energy || result.data.energy || result.data.data?.energy || 'N/A';
+                    tableHTML += `
+                        <tr>
+                            <td>${result.name}</td>
+                            <td><span class="status-indicator status-success">✓</span></td>
+                            <td>${result.time}ms</td>
+                            <td>${energy}</td>
+                        </tr>
+                    `;
+                } else {
+                    tableHTML += `
+                        <tr>
+                            <td>${result.name}</td>
+                            <td><span class="status-indicator status-error">✗</span></td>
+                            <td>N/A</td>
+                            <td>Error</td>
+                        </tr>
+                    `;
+                }
+            });
+            
+            tableHTML += '</table>';
+            result.innerHTML = tableHTML;
+        }
+        
+        // ============================================================================
+        // 🔬 DEMO 5: Análisis de Interacción
+        // ============================================================================
+        
+        async function demoInteraction() {
+            const mol1 = document.getElementById('mol1').value;
+            const mol2 = document.getElementById('mol2').value;
+            const result = document.getElementById('interactionResult');
+            
+            result.innerHTML = '<p>🔄 Analizando interacción molecular...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/analyze-interaction', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        molecule1: mol1,
+                        molecule2: mol2
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const interaction = data.interaction;
+                    result.innerHTML = `
+                        <div class="energy-display">🔬 ${interaction.interaction_energy} Ha</div>
+                        <div class="status-indicator status-info">${interaction.interaction_type}</div>
+                        <p><strong>Molécula 1:</strong> ${interaction.molecule1}</p>
+                        <p><strong>Molécula 2:</strong> ${interaction.molecule2}</p>
+                        <p><strong>Energía de Interacción:</strong> ${interaction.interaction_energy} Ha</p>
+                        <p><strong>Tipo de Interacción:</strong> ${interaction.interaction_type}</p>
+                        <p><strong>Estabilidad:</strong> ${interaction.stability}</p>
+                    `;
+                } else {
+                    result.innerHTML = `<div class="status-indicator status-error">Error: ${data.error}</div>`;
+                }
+                
+            } catch (error) {
+                result.innerHTML = `<div class="status-indicator status-error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        // ============================================================================
+        // 📚 DEMO 6: Información de Moléculas
+        // ============================================================================
+        
+        async function demoMoleculeInfo() {
+            const result = document.getElementById('infoResult');
+            
+            result.innerHTML = '<p>🔄 Obteniendo información de moléculas...</p>';
+            
+            try {
+                // Obtener lista de moléculas
+                const listResponse = await fetch('http://localhost:5000/api/molecules');
+                const listData = await listResponse.json();
+                
+                let infoHTML = `
+                    <h4>📚 Moléculas Disponibles (${listData.count})</h4>
+                    <ul>
+                `;
+                
+                for (const molecule of listData.molecules) {
+                    try {
+                        const infoResponse = await fetch(`http://localhost:5000/api/molecules/${molecule}`);
+                        const infoData = await infoResponse.json();
+                        
+                        if (infoData.success) {
+                            const info = infoData.info;
+                            infoHTML += `
+                                <li>
+                                    <strong>${molecule}</strong>
+                                    <ul>
+                                        <li>Átomos: ${info.atoms.join(', ')}</li>
+                                        <li>Longitud de enlace: ${info.bond_length} Å</li>
+                                        <li>Electrones: ${info.electrons}</li>
+                                        <li>Orbitales: ${info.orbitals}</li>
+                                    </ul>
+                                </li>
+                            `;
+                        }
+                    } catch (error) {
+                        infoHTML += `<li><strong>${molecule}</strong> - Error obteniendo info</li>`;
+                    }
+                }
+                
+                infoHTML += '</ul>';
+                result.innerHTML = infoHTML;
+                
+            } catch (error) {
+                result.innerHTML = `<div class="status-indicator status-error">Error: ${error.message}</div>`;
+            }
+        }
+        
+        // ============================================================================
+        // 🚀 INICIALIZACIÓN
+        // ============================================================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎮 Demo Interactivo cargado');
+            console.log('📡 Todas las APIs están disponibles para prueba');
+        });
+    </script>
+</body>
+</html>

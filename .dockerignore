@@ -1,0 +1,94 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual Environments (NO copiar al contenedor Docker)
+quantum_env/
+quantum_env_311/
+venv/
+env/
+ENV/
+.venv
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment variables (usar Docker secrets en su lugar)
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache
+.cache/
+.pytest_cache/
+__pycache__/
+
+# Documentation (no necesario en imagen)
+*.md
+!README.md
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
+BADGES.md
+
+# Tests (opcional: comentar si quieres incluir tests)
+test_*.py
+*_test.py
+tests/
+
+# Docker files (no copiar otros Dockerfiles)
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Security files
+SECURITY.md
+CAMBIOS_SEGURIDAD.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Python installer
+*.exe
+
+# Quantum Simulator specific
+data/
+results/
+simulations/
+*.pkl
+*.pickle
+

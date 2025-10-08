@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Simulador Cuántico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .simulation-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .result-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            border: 2px solid #e9ecef;
+            min-height: 200px;
+        }
+        
+        .result-content {
+            display: none;
+        }
+        
+        .result-content.show {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .energy-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .molecule-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .api-info {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .api-info h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+        
+        .api-info code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Simulador Cuántico</h1>
+            <p>Simulación de moléculas usando métodos cuánticos avanzados</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="simulation-panel">
+                <h2>🔬 Configuración de Simulación</h2>
+                
+                <div class="form-group">
+                    <label for="moleculeSelect">Seleccionar Molécula:</label>
+                    <select id="moleculeSelect">
+                        <option value="LiH">Litio-Hidrógeno (LiH)</option>
+                        <option value="Li_GLYCINE">Litio-Glicina (Li_GLYCINE)</option>
+                        <option value="H2O">Agua (H2O)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="basisSet">Conjunto Base:</label>
+                    <select id="basisSet">
+                        <option value="sto3g">STO-3G</option>
+                        <option value="6-31g">6-31G</option>
+                        <option value="cc-pvdz">cc-pVDZ</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="optimizer">Optimizador:</label>
+                    <select id="optimizer">
+                        <option value="COBYLA">COBYLA</option>
+                        <option value="SPSA">SPSA</option>
+                        <option value="L_BFGS_B">L-BFGS-B</option>
+                    </select>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="runSimpleSimulation()">
+                        🚀 Simulación Simple
+                    </button>
+                    <button class="btn btn-success" onclick="runAdvancedSimulation()">
+                        ⚡ Simulación Avanzada
+                    </button>
+                    <button class="btn btn-warning" onclick="runMockSimulation()">
+                        🧪 Simulación Mock
+                    </button>
+                    <button class="btn btn-primary" onclick="startWebSocketSimulation()">
+                        🔌 WebSocket (Tiempo Real)
+                    </button>
+                </div>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Ejecutando simulación cuántica...</p>
+                </div>
+                
+                <div class="progress-bar" id="progressBar" style="display: none;">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            
+            <div class="result-panel">
+                <h3>📊 Resultados de la Simulación</h3>
+                <div id="result" class="result-content">
+                    <p>Selecciona una molécula y ejecuta una simulación para ver los resultados.</p>
+                </div>
+            </div>
+            
+            <div class="api-info">
+                <h4>🔗 APIs Disponibles</h4>
+                <p><strong>REST Simple:</strong> <code>/api/quantum/simulate</code></p>
+                <p><strong>Simulación por Lote:</strong> <code>/api/quantum/start-simulation</code></p>
+                <p><strong>WebSocket:</strong> <code>ws://localhost:5000</code></p>
+                <p><strong>Mock API:</strong> <code>/api/mock/quantum-simulate</code></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script_simple.js"></script>
+    <script>
+        // Variables globales
+        let currentSimulationId = null;
+        let socket = null;
+        
+        // ============================================================================
+        // 🎯 PATRÓN 1: API REST SIMPLE
+        // ============================================================================
+        
+        async function runSimpleSimulation() {
+            const molecule = document.getElementById('moleculeSelect').value;
+            const basisSet = document.getElementById('basisSet').value;
+            const optimizer = document.getElementById('optimizer').value;
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/quantum/simple', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        molecule: molecule,
+                        parameters: {
+                            basis_set: basisSet,
+                            optimizer: optimizer
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showResult(`
+                        <div class="energy-display">⚡ Energía: ${result.data.energy} Ha</div>
+                        <div class="status-indicator status-success">${result.data.interaction_strength}</div>
+                        <p><strong>Molécula:</strong> ${result.data.molecule}</p>
+                        <p><strong>Tiempo de cómputo:</strong> ${result.data.computation_time}</p>
+                        <p><strong>Mensaje:</strong> ${result.data.message}</p>
+                    `);
+                } else {
+                    showError(`Error: ${result.error}`);
+                }
+                
+            } catch (error) {
+                showError(`Error de conexión: ${error.message}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // ============================================================================
+        // ⚡ SIMULACIÓN AVANZADA (REST Completo)
+        // ============================================================================
+        
+        async function runAdvancedSimulation() {
+            const molecule = document.getElementById('moleculeSelect').value;
+            const basisSet = document.getElementById('basisSet').value;
+            const optimizer = document.getElementById('optimizer').value;
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/quantum/simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        molecule: molecule,
+                        parameters: {
+                            basis_set: basisSet,
+                            optimizer: optimizer
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showResult(`
+                        <div class="energy-display">⚡ Energía: ${result.energy} Ha</div>
+                        <div class="status-indicator status-success">${result.interaction_strength}</div>
+                        <p><strong>Molécula:</strong> ${result.molecule}</p>
+                        <p><strong>Tiempo de cómputo:</strong> ${result.computation_time.toFixed(2)} segundos</p>
+                        <p><strong>Estado:</strong> ${result.status}</p>
+                        <p><strong>Mensaje:</strong> ${result.message}</p>
+                    `);
+                } else {
+                    showError(`Error: ${result.error}`);
+                }
+                
+            } catch (error) {
+                showError(`Error de conexión: ${error.message}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // ============================================================================
+        // 🧪 SIMULACIÓN MOCK
+        // ============================================================================
+        
+        async function runMockSimulation() {
+            const molecule = document.getElementById('moleculeSelect').value;
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/mock/quantum-simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        molecule: molecule
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showResult(`
+                        <div class="energy-display">🧪 Energía Mock: ${result.energy.toFixed(4)} Ha</div>
+                        <div class="status-indicator status-info">${result.interaction_strength}</div>
+                        <p><strong>Molécula:</strong> ${result.molecule}</p>
+                        <p><strong>Tiempo de cómputo:</strong> ${result.computation_time}</p>
+                        <p><strong>Mensaje:</strong> ${result.message}</p>
+                        <div class="status-indicator status-info">Simulación Mock - Para desarrollo</div>
+                    `);
+                } else {
+                    showError(`Error: ${result.error}`);
+                }
+                
+            } catch (error) {
+                showError(`Error de conexión: ${error.message}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // ============================================================================
+        // 🔌 WEBSOCKET (Tiempo Real)
+        // ============================================================================
+        
+        function startWebSocketSimulation() {
+            const molecule = document.getElementById('moleculeSelect').value;
+            const basisSet = document.getElementById('basisSet').value;
+            const optimizer = document.getElementById('optimizer').value;
+            
+            // Conectar WebSocket si no está conectado
+            if (!socket) {
+                socket = io('http://localhost:5000');
+                
+                socket.on('connected', (data) => {
+                    console.log('Conectado:', data.message);
+                });
+                
+                socket.on('simulation_progress', (data) => {
+                    showProgress(data.progress);
+                    console.log('Progreso:', data.message);
+                });
+                
+                socket.on('simulation_complete', (data) => {
+                    showResult(`
+                        <div class="energy-display">⚡ Energía: ${data.energy} Ha</div>
+                        <div class="status-indicator status-success">${data.interaction_strength}</div>
+                        <p><strong>Molécula:</strong> ${data.molecule}</p>
+                        <p><strong>Tiempo de cómputo:</strong> ${data.computation_time.toFixed(2)} segundos</p>
+                        <div class="status-indicator status-success">Simulación WebSocket completada</div>
+                    `);
+                    hideProgress();
+                });
+                
+                socket.on('simulation_error', (data) => {
+                    showError(`Error WebSocket: ${data.error}`);
+                    hideProgress();
+                });
+            }
+            
+            // Iniciar simulación
+            showProgress(0);
+            socket.emit('start_quantum_simulation', {
+                molecule: molecule,
+                parameters: {
+                    basis_set: basisSet,
+                    optimizer: optimizer
+                }
+            });
+        }
+        
+        // ============================================================================
+        // 🚀 SIMULACIÓN POR LOTE (Opcional)
+        // ============================================================================
+        
+        async function startBatchSimulation() {
+            const molecule = document.getElementById('moleculeSelect').value;
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/quantum/start-simulation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        molecule: molecule
+                    })
+                });
+                
+                const result = await response.json();
+                currentSimulationId = result.simulation_id;
+                
+                showResult(`
+                    <div class="status-indicator status-info">Simulación iniciada</div>
+                    <p><strong>ID:</strong> ${result.simulation_id}</p>
+                    <p><strong>Molécula:</strong> ${result.molecule}</p>
+                    <p><strong>Estado:</strong> ${result.status}</p>
+                    <p><strong>Mensaje:</strong> ${result.message}</p>
+                `);
+                
+                // Verificar estado cada 2 segundos
+                checkSimulationStatus();
+                
+            } catch (error) {
+                showError(`Error: ${error.message}`);
+            }
+        }
+        
+        async function checkSimulationStatus() {
+            if (!currentSimulationId) return;
+            
+            try {
+                const response = await fetch(`http://localhost:5000/api/quantum/status/${currentSimulationId}`);
+                const status = await response.json();
+                
+                if (status.status === 'completed') {
+                    showResult(`
+                        <div class="energy-display">⚡ Energía: ${status.result.energy} Ha</div>
+                        <div class="status-indicator status-success">${status.result.interaction_strength}</div>
+                        <p><strong>Molécula:</strong> ${status.molecule}</p>
+                        <p><strong>Tiempo de cómputo:</strong> ${status.result.computation_time.toFixed(2)} segundos</p>
+                        <div class="status-indicator status-success">Simulación por lote completada</div>
+                    `);
+                    currentSimulationId = null;
+                } else if (status.status === 'error') {
+                    showError(`Error en simulación: ${status.error}`);
+                    currentSimulationId = null;
+                } else {
+                    // Seguir verificando
+                    setTimeout(checkSimulationStatus, 2000);
+                }
+                
+            } catch (error) {
+                showError(`Error verificando estado: ${error.message}`);
+                currentSimulationId = null;
+            }
+        }
+        
+        // ============================================================================
+        // 🎨 FUNCIONES DE UI
+        // ============================================================================
+        
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            loading.style.display = show ? 'block' : 'none';
+        }
+        
+        function showProgress(progress) {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            
+            progressBar.style.display = 'block';
+            progressFill.style.width = progress + '%';
+        }
+        
+        function hideProgress() {
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.display = 'none';
+        }
+        
+        function showResult(html) {
+            const result = document.getElementById('result');
+            result.innerHTML = html;
+            result.classList.add('show');
+        }
+        
+        function showError(message) {
+            const result = document.getElementById('result');
+            result.innerHTML = `
+                <div class="status-indicator status-error">Error</div>
+                <p>${message}</p>
+            `;
+            result.classList.add('show');
+        }
+        
+        // ============================================================================
+        // 🚀 INICIALIZACIÓN
+        // ============================================================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 Simulador Cuántico cargado');
+            console.log('📡 APIs disponibles:');
+            console.log('  - REST Simple: /api/quantum/simple');
+            console.log('  - REST Completo: /api/quantum/simulate');
+            console.log('  - Mock: /api/mock/quantum-simulate');
+            console.log('  - WebSocket: ws://localhost:5000');
+        });
+    </script>
+</body>
+</html>
